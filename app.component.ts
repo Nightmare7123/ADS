@@ -1,63 +1,30 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { RouterOutlet, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, HttpClientModule],
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  imports: [CommonModule, RouterOutlet, RouterLink],
+  template: `
+    <nav class="bg-blue-600 p-4 text-white flex justify-center">
+      <div class="flex space-x-6">
+        <a routerLink="/students" class="hover:text-yellow-300">Students</a>
+        <a routerLink="/instructors" class="hover:text-yellow-300">Instructors</a>
+        <a routerLink="/courses" class="hover:text-yellow-300">Courses</a>
+        <a routerLink="/departments" class="hover:text-yellow-300">Departments</a>
+        <a routerLink="/classrooms" class="hover:text-yellow-300">Classrooms</a>
+        <a routerLink="/advisors" class="hover:text-yellow-300">Advisors</a>
+        <a routerLink="/prereqs" class="hover:text-yellow-300">Prerequisites</a>
+        <a routerLink="/sections" class="hover:text-yellow-300">Sections</a>
+        <a routerLink="/time-slots" class="hover:text-yellow-300">Time Slots</a>
+        <a routerLink="/teaches" class="hover:text-yellow-300">Teaches</a>
+        <a routerLink="/takes" class="hover:text-yellow-300">Takes</a>
+      </div>
+    </nav>
+    <div class="p-4">
+      <router-outlet></router-outlet>
+    </div>
+  `
 })
-export class AppComponent {
-  form = new FormGroup({
-    name: new FormControl('', Validators.required),
-    email: new FormControl('', [Validators.required, Validators.email]),
-    marks: new FormControl('', Validators.required)
-  });
-
-  students: any[] = [];
-  editingId: string | null = null;
-
-  constructor(private http: HttpClient) {
-    this.fetchStudents();
-  }
-
-  fetchStudents() {
-    this.http.get<any[]>('http://localhost:3003/students').subscribe(data => this.students = data);
-  }
-
-  submit() {
-    if (this.form.invalid) return;
-
-    if (this.editingId) {
-      this.http.put(`http://localhost:3003/students/${this.editingId}`, {
-        name: this.form.value.name,
-        marks: this.form.value.marks
-      }).subscribe(() => {
-        this.fetchStudents();
-        this.form.reset();
-        this.editingId = null;
-      });
-    } else {
-      this.http.post('http://localhost:3003/students', this.form.value).subscribe(() => {
-        this.fetchStudents();
-        this.form.reset();
-      });
-    }
-  }
-
-  edit(student: any) {
-    this.editingId = student._id;
-    this.form.setValue({
-      name: student.name,
-      email: student.email,
-      marks: student.marks
-    });
-  }
-
-  delete(id: string) {
-    this.http.delete(`http://localhost:3003/students/${id}`).subscribe(() => this.fetchStudents());
-  }
-}
+export class AppComponent {}
